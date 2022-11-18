@@ -20,17 +20,12 @@ fetch(`http://localhost:3000/api/products/${productId}`)
 
 //TODO create insertProduct function
 function insertProduct(product) {
-  //TODO replacing the commented lines in product html with javascript
+  // replacing the commented lines in product html with javascript
 
-  const itemImgContainer = document.getElementsByClassName("item__img");
+  const itemImgContainer = document.querySelector(".item__img");
   itemImgContainer.innerHTML = `
   <img src="../images/logo.png" alt="Photo of a sofa" />
    `;
-
-  // const itemImg = document.createElement("img");
-  // itemImg.setAttribute("src", "../images/logo.png");
-  // itemImg.setAttribute("alt", "Photo of a sofa");
-  // itemImgContainer.appendChild(itemImg);
 
   const productName = document.getElementById("title");
   productName.textContent = `${product.name}`;
