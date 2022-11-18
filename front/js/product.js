@@ -22,7 +22,10 @@ fetch(`http://localhost:3000/api/products/${productId}`)
 function insertProduct(product) {
   //TODO replacing the commented lines in product html with javascript
 
-  // const itemImgContainer = document.getElementsByClassName("item__img");
+  const itemImgContainer = document.getElementsByClassName("item__img");
+  itemImgContainer.innerHTML = `
+  <img src="../images/logo.png" alt="Photo of a sofa" />
+   `;
 
   // itemImgContainer.innerHTML = `
   // <img src="../images/logo.png" alt="Photo of a sofa" />
