@@ -27,10 +27,6 @@ function insertProduct(product) {
   <img src="../images/logo.png" alt="Photo of a sofa" />
    `;
 
-  // itemImgContainer.innerHTML = `
-  // <img src="../images/logo.png" alt="Photo of a sofa" />
-  // `;
-
   // const itemImg = document.createElement("img");
   // itemImg.setAttribute("src", "../images/logo.png");
   // itemImg.setAttribute("alt", "Photo of a sofa");
