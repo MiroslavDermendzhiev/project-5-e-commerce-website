@@ -42,13 +42,34 @@ function insertProduct(product) {
   <option value="vert">${product.colors[0]}</option>
   <option value="blanc">${product.colors[1]}</option>  
   `;
-
-  //TODO done with ms6
+  // done with ms6
 }
 // Milestone 7
 //TODO add click eventListener to the button on the page
+const addToCardButton = document.querySelector("#addToCard");
+addToCardButton.addEventListener("click", addToCardFunction());
 //TODO create function for eventListener
-//TODO get selected product colour and quantity from page
-//TODO add selected product colour and quantity to local storage
-//note: kind of object of the cards, creating javascript object with id colour and quantity, those 3 are card items
-//expample: [{id: "1234", colour: "green", quantity: 8}, {...}]
+function addToCardFunction() {
+  //TODO get selected product colour and quantity from page
+  const chosenColour = document.getElementById("colors").value;
+
+  const chosenQuantity = document.getElementById("quantity").value;
+
+  //TODO add selected product colour and quantity to local storage
+  //creating an object
+  const chosenProduct = {
+    id: productId,
+    colour: chosenColour,
+    quantity: chosenQuantity,
+  };
+  localStorage.setItem("colour", JSON.stringify(chosenProduct));
+
+  const cartArray = [];
+  cartArray.push(chosenProduct);
+
+  //localStorage.setItem('font', 'Helvetica');
+  //localStorage.setItem('image', 'myCat.png');
+
+  //note: kind of object of the cards, creating javascript object with id colour and quantity, those 3 are card items
+  //expample: [{id: "1234", colour: "green", quantity: 8}, {...}]
+}
