@@ -47,12 +47,11 @@ function insertProduct(product) {
 // Milestone 7
 //TODO add click eventListener to the button on the page
 const addToCardButton = document.querySelector("#addToCard");
-addToCardButton.addEventListener("click", addToCardFunction());
+addToCardButton.addEventListener("click", addToCardFunction);
 //TODO create function for eventListener
 function addToCardFunction() {
   //TODO get selected product colour and quantity from page
   const chosenColour = document.getElementById("colors").value;
-
   const chosenQuantity = document.getElementById("quantity").value;
 
   //TODO add selected product colour and quantity to local storage
@@ -60,12 +59,18 @@ function addToCardFunction() {
   const chosenProduct = {
     id: productId,
     colour: chosenColour,
-    quantity: chosenQuantity,
+    quantity: parseInt(chosenQuantity),
   };
-  localStorage.setItem("colour", JSON.stringify(chosenProduct));
+  //localStorage.setItem("colour", JSON.stringify(chosenProduct));
 
-  const cartArray = [];
+  const cartArray = JSON.parse(localStorage.getItem("cart")) || [];
+
+  //TODO deal with two scenarios:
+  //  -the chosen product with the same colour is not in the arrey(just push it)
   cartArray.push(chosenProduct);
+  //  -the chosen product with the same colour is already  in the arrey (increase quantity)
+
+  localStorage.setItem("cart", JSON.stringify(cartArray));
 
   //localStorage.setItem('font', 'Helvetica');
   //localStorage.setItem('image', 'myCat.png');
