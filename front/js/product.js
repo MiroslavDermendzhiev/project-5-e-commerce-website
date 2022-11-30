@@ -46,10 +46,10 @@ function insertProduct(product) {
 }
 // Milestone 7
 //TODO add click eventListener to the button on the page
-const addToCardButton = document.querySelector("#addToCart");
-addToCardButton.addEventListener("click", addToCardFunction);
+const addToCartButton = document.querySelector("#addToCart");
+addToCartButton.addEventListener("click", addToCartFunction);
 //TODO create function for eventListener
-function addToCardFunction() {
+function addToCartFunction() {
   //TODO get selected product colour and quantity from page
   const chosenColour = document.getElementById("colors").value;
   const chosenQuantity = document.getElementById("quantity").value;
