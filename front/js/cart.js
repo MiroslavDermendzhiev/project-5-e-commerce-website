@@ -15,22 +15,13 @@ fetch("http://localhost:3000/api/products")
 const cartArray = JSON.parse(localStorage.getItem("cart")) || [];
 console.log(cartArray);
 
+//TODO insert cart item card into into cart page using info from "product" and "cartObject"
 function showProductsInCard(products) {
   for (let i = 0; i < cartArray.length; i++) {
     const cartObject = cartArray[i]; //getting the first object from local Storage
     console.log(cartObject);
 
-    let n = 0;
-    const product = products[n];
-
-    // for(n; cartObject.id == product._id && n < products.length; n++)  ?
-
-    //     //create HTML by extracting the information from the backand  ??? ??
-
-    // }
-    while (cartObject.id !== product._id && n < products.length) {
-      n++; //this loop is going through the object id-s of the backand
-      //untill the ids match each other ????
-    }
+    const product = products.find((product) => product._id === cartObject.id); // checking for id match between cartObject and a product
+    console.log(product);
   }
 }
