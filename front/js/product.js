@@ -39,8 +39,8 @@ function insertProduct(product) {
   const productColour = document.getElementById("colors");
   productColour.innerHTML = `
   <option value="">--Please, select a color --</option>
-  <option value="vert">${product.colors[0]}</option>
-  <option value="blanc">${product.colors[1]}</option>  
+  <option value="${product.colors[0]}">${product.colors[0]}</option>
+  <option value="${product.colors[1]}">${product.colors[1]}</option>  
   `;
   // done with ms6
 }
