@@ -90,25 +90,62 @@ function showProductsInCard(products) {
     //TODO showing total price on the cart page
     const implementingTotalPrice = document.querySelector("#totalPrice");
     implementingTotalPrice.textContent = totalCartPrice;
+
+    //add event listeners for delete an update
+    const deleteButton = document.getElementsByClassName("deleteItem"); //creates an array-like object of the delete buttons
+    console.log(deleteButton);
+    for (
+      var delBtnCounter = 0;
+      delBtnCounter < deleteButton.length;
+      delBtnCounter++
+    ) {
+      deleteButton[delBtnCounter].addEventListener("click", removeFunction); //add eventListener to all the delete buttons
+    }
   }
 }
 
 //Milestone 9
 
 //remove an item from the cart
-var removeItemsFromCart = document.getElementsByClassName("deleteItem"); //creates an array of the delete buttons
-console.log(removeItemsFromCart);
-for (var i = 0; i < removeItemsFromCart.length; i++) {
-  //the for loop goes through this array in order to set a delete function to all delete buttons
-  var deleteButton = removeItemsFromCart[i];
-  deleteButton.addEventListener("click", removeFunction);
 
-  function removeFunction(event) {
-    var deleteButtonClicked = event.target; //targetting the deleteButton
-    var sectionForRemoval = deleteButtonClicked.closest("article"); // selectiong the closest article parent
-    sectionForRemoval.remove(); //removing the closest article parent
-  }
+//the for loop goes through this array in order to set a delete function to all delete buttons
+
+function removeFunction(event) {
+  var deleteButtonClicked = event.target; //targetting the deleteButton
+  var sectionForRemoval = deleteButtonClicked.closest("article"); // selectiong the closest article parent
+  sectionForRemoval.remove(); //removing the closest article parent
+  //TODO remove the selected object from the local storage
+  const clickedArticle = document.querySelector(".cart__item");
+  const id = clickedArticle.dataset.id;
+  const color = clickedArticle.dataset.color;
+  console.log(id);
+  console.log(color);
+  //the following commented code is already written after the fetch function
+  // const cartArray = JSON.parse(localStorage.getItem("cart")) || [];
+  // console.log(cartArray);
+  //finding the respective item in the local storage and remove it
+
+  const cartArrayUpdated = cartArray.filter(
+    (localItem) => !(id == localItem.id && color == localItem.colour)
+  );
+  console.log(cartArrayUpdated);
+  //Update local storage
+  localStorage.setItem("cart", JSON.stringify(cartArrayUpdated));
 }
+// const removeItemsFromCart = document.getElementsByClassName("deleteItem"); //creates an array of the delete buttons
+// console.log(removeItemsFromCart);
+// for (var i = 0; i < removeItemsFromCart.length; i++) {
+//   //the for loop goes through this array in order to set a delete function to all delete buttons
+//   var deleteButton = removeItemsFromCart[i];
+//   deleteButton.addEventListener("click", removeFunction);
+
+//   function removeFunction(event) {
+//     var deleteButtonClicked = event.target; //targetting the deleteButton
+//     var sectionForRemoval = deleteButtonClicked.closest("article"); // selectiong the closest article parent
+//     sectionForRemoval.remove(); //removing the closest article parent
+//     //TODO remove the selected object from the local storage
+//   }
+// }
 // }
 // const quantityField = document.querySelectorAll("[data-id]");
 // // const quantityField = document.querySelector(".itemQuantity");
