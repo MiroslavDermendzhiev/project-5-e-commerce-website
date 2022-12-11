@@ -91,15 +91,27 @@ function showProductsInCard(products) {
     const implementingTotalPrice = document.querySelector("#totalPrice");
     implementingTotalPrice.textContent = totalCartPrice;
 
-    //add event listeners for delete an update
+    //the for loop goes through this array in order to set a delete function to all delete buttons
     const deleteButton = document.getElementsByClassName("deleteItem"); //creates an array-like object of the delete buttons
     console.log(deleteButton);
     for (
-      var delBtnCounter = 0;
+      let delBtnCounter = 0;
       delBtnCounter < deleteButton.length;
       delBtnCounter++
     ) {
-      deleteButton[delBtnCounter].addEventListener("click", removeFunction); //add eventListener to all the delete buttons
+      deleteButton[delBtnCounter].addEventListener("click", removeCartItem); //add eventListener to all the delete buttons
+    }
+
+    const updateQuantityInputs =
+      document.getElementsByClassName("itemQuantity");
+    console.log(updateQuantityInputs);
+    for (
+      let updateQuantityCounter = 0;
+      updateQuantityCounter < updateQuantityInputs.length;
+      updateQuantityCounter++
+    ) {
+      let updateQuantity = updateQuantityInputs[updateQuantityCounter];
+      updateQuantity.addEventListener("change", updateCartItemQuantity);
     }
   }
 }
@@ -108,62 +120,63 @@ function showProductsInCard(products) {
 
 //remove an item from the cart
 
-//the for loop goes through this array in order to set a delete function to all delete buttons
-
-function removeFunction(event) {
-  var deleteButtonClicked = event.target; //targetting the deleteButton
-  var sectionForRemoval = deleteButtonClicked.closest("article"); // selectiong the closest article parent
-  sectionForRemoval.remove(); //removing the closest article parent
+function removeCartItem(event) {
+  const cartArray = JSON.parse(localStorage.getItem("cart")) || [];
+  const deleteButtonClicked = event.target; //targetting the deleteButton
+  const clickedArticle = deleteButtonClicked.closest("article"); // selectiong the closest article parent
+  clickedArticle.remove(); //removing the closest article parent
   //TODO remove the selected object from the local storage
-  const clickedArticle = document.querySelector(".cart__item");
   const id = clickedArticle.dataset.id;
   const color = clickedArticle.dataset.color;
   console.log(id);
   console.log(color);
-  //the following commented code is already written after the fetch function
-  // const cartArray = JSON.parse(localStorage.getItem("cart")) || [];
-  // console.log(cartArray);
-  //finding the respective item in the local storage and remove it
 
   const cartArrayUpdated = cartArray.filter(
-    (localItem) => !(id == localItem.id && color == localItem.colour)
+    (localItem) => !(id === localItem.id && color === localItem.colour)
   );
   console.log(cartArrayUpdated);
   //Update local storage
   localStorage.setItem("cart", JSON.stringify(cartArrayUpdated));
+
+  //Update cart page totals
+  let totalItemsQuantity = 0;
+  for (const localProduct of cartArrayUpdated) {
+    totalItemsQuantity = totalItemsQuantity + localProduct.quantity;
+    const totalQuantity = document.querySelector("#totalQuantity");
+    totalQuantity.textContent = totalItemsQuantity;
+  }
+
+  //TODO use cartArray and for loop/ or reduce()/ to calculate the new totals quantity and price and insert it into the page
 }
-// const removeItemsFromCart = document.getElementsByClassName("deleteItem"); //creates an array of the delete buttons
-// console.log(removeItemsFromCart);
-// for (var i = 0; i < removeItemsFromCart.length; i++) {
-//   //the for loop goes through this array in order to set a delete function to all delete buttons
-//   var deleteButton = removeItemsFromCart[i];
-//   deleteButton.addEventListener("click", removeFunction);
 
-//   function removeFunction(event) {
-//     var deleteButtonClicked = event.target; //targetting the deleteButton
-//     var sectionForRemoval = deleteButtonClicked.closest("article"); // selectiong the closest article parent
-//     sectionForRemoval.remove(); //removing the closest article parent
-//     //TODO remove the selected object from the local storage
-//   }
-// }
-// }
-// const quantityField = document.querySelectorAll("[data-id]");
-// // const quantityField = document.querySelector(".itemQuantity");
-// // // const quantityField = document.querySelector(
-// // //   "div.cart__item__content__settings__quantity input[name='itemQuantity']"
-// // // );
-// quantityField.forEach((cardItem) => {
-//   console.log(cardItem.dataset.id);
-// });
+function updateCartItemQuantity(event) {
+  const cartArray = JSON.parse(localStorage.getItem("cart")) || [];
+  const quantityInputField = event.target; //targetting the deleteButton
+  const clickedArticle = quantityInputField.closest("article"); // selectiong the closest article parent
+  //TODO remove the selected object from the local storage
+  const id = clickedArticle.dataset.id;
+  const color = clickedArticle.dataset.color;
+  console.log(id);
+  console.log(color);
 
-// // quantityField.addEventListener("change", updateValue);
+  const matchedCartItem = cartArray.find(
+    (localQuantityItem) =>
+      id === localQuantityItem.id && color === localQuantityItem.colour
+  );
 
-// // function updateValue(event) {
-// //   const newValue = event.target.value;
-// //   localProduct.quantity = newValue;
-// // }
+  console.log(matchedCartItem);
+
+  //TODO use cartArray and for loop/ or reduce()/ to calculate the new totals quantity and price and insert it into the page
+}
 // // https://www.google.com/search?q=change+eventlistenere+js&rlz=1C1VDKB_en-GBGB988GB988&oq=change+eventlistenere+js&aqs=chrome..69i57j0i13i512l4j0i13i30l2j0i13i15i30j0i5i13i30l2.5365j0j1&sourceid=chrome&ie=UTF-8
 // // https://www.google.com/search?q=datasets+custom+attributes&rlz=1C1VDKB_en-GBGB988GB988&oq=datasets+custom+attributes&aqs=chrome..69i57j33i160l2.5874j0j1&sourceid=chrome&ie=UTF-8
 // // https://www.google.com/search?q=event+target&rlz=1C1VDKB_en-GBGB988GB988&oq=event+target&aqs=chrome.0.0i512l3j0i20i263i512j0i512l3j69i60.1902j0j1&sourceid=chrome&ie=UTF-8
 // // https://developer.mozilla.org/en-US/docs/Web/API/Element/closest
 // // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset#examples
+
+//Milestone 10
+
+//TODO add cllick eventListener to Order btn
+//TODO test each form field for valid information and add error msg to the not valid fields
+//TODO do http posr request to the backend for /order
+//TODO if successful use wondow.location.assign(url string with the parameter having the order id)

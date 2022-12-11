@@ -24,7 +24,7 @@ function insertProduct(product) {
 
   const itemImgContainer = document.querySelector(".item__img");
   itemImgContainer.innerHTML = `
-  <img src="../images/logo.png" alt="Photo of a sofa" />
+  <img src="${product.imageUrl}" alt="${product.altTxt}" />
    `;
 
   const productName = document.getElementById("title");
