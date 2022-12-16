@@ -1,14 +1,14 @@
-//TODO loop through the cart Array from local storage
-//NOTE the rest of the TODOs are for each cart found in the array
-//TODO get the product info form the cart item product id from the backand (fetch API)
-//TODO insert a cart item card in the cart.html page (look at script.js)
+let products;
+
 fetch("http://localhost:3000/api/products")
   .then((data) => {
     return data.json(); //converting json to formatted data
   })
   .then((products) => {
     console.log(products);
-    // insertProducts(products);
+    // let products = products;
+    let initialProducts = products;
+    console.log(initialProducts);
     showProductsInCard(products);
   });
 
@@ -138,19 +138,48 @@ function removeCartItem(event) {
   //Update local storage
   localStorage.setItem("cart", JSON.stringify(cartArrayUpdated));
 
-  //Update cart page totals
+  // //Update cart page totals
+  // let totalItemsQuantity = 0;
+  // for (const localProduct of cartArrayUpdated) {
+  //   totalItemsQuantity = totalItemsQuantity + localProduct.quantity;
+  //   const totalQuantity = document.querySelector("#totalQuantity");
+  //   totalQuantity.textContent = totalItemsQuantity;
+
+  // }
+  //EXTRACTED UPDATE FUNCTION!!!!!!!!!!!!!!!!!!!!!!!
+  // updateCartPageTotals();
+
+  updateCartTotalQuantity(cartArrayUpdated);
+  updateCartTotalPrice(cartArrayUpdated, products);
+  //TODO use cartArray and for loop/ or reduce()/ to calculate the new totals quantity and price and insert it into the page
+  //NOTE you can use info from cartArrayUpdated and global products array which you originaly fetched from the backend on top
+}
+
+//total quantity calculated when removing an item from the cart
+function updateCartTotalQuantity(cartArrayUpdated) {
   let totalItemsQuantity = 0;
   for (const localProduct of cartArrayUpdated) {
     totalItemsQuantity = totalItemsQuantity + localProduct.quantity;
     const totalQuantity = document.querySelector("#totalQuantity");
     totalQuantity.textContent = totalItemsQuantity;
   }
-
-  //TODO use cartArray and for loop/ or reduce()/ to calculate the new totals quantity and price and insert it into the page
+}
+//total price calculated when removing an item from the cart
+function updateCartTotalPrice(cartArrayUpdated, products) {
+  let totalItemsPrice = 0;
+  //matching the chosed local storage item with the same from the server so i can get the price of the product
+  for (const localProduct of cartArrayUpdated) {
+    const matchedProduct = products.find((product) => {
+      console.log(product._id);
+      return product._id === localProduct.id;
+    });
+    let deletedItemPrice = localProduct.quantity * matchedProduct.price;
+    totalItemsPrice = totalItemsPrice - deletedItemPrice;
+  }
 }
 
 function updateCartItemQuantity(event) {
-  const cartArray = JSON.parse(localStorage.getItem("cart")) || [];
+  const cartArray = JSON.parse(localStorage.getItem("cart"));
   const quantityInputField = event.target; //targetting the deleteButton
   const clickedArticle = quantityInputField.closest("article"); // selectiong the closest article parent
   //TODO remove the selected object from the local storage
@@ -167,7 +196,10 @@ function updateCartItemQuantity(event) {
   console.log(matchedCartItem);
 
   //TODO use cartArray and for loop/ or reduce()/ to calculate the new totals quantity and price and insert it into the page
+  matchedCartItem.quantity = parseInt(quantityInputField.value);
+  localStorage.setItem("cart", JSON.stringify(cartArray));
 }
+
 // // https://www.google.com/search?q=change+eventlistenere+js&rlz=1C1VDKB_en-GBGB988GB988&oq=change+eventlistenere+js&aqs=chrome..69i57j0i13i512l4j0i13i30l2j0i13i15i30j0i5i13i30l2.5365j0j1&sourceid=chrome&ie=UTF-8
 // // https://www.google.com/search?q=datasets+custom+attributes&rlz=1C1VDKB_en-GBGB988GB988&oq=datasets+custom+attributes&aqs=chrome..69i57j33i160l2.5874j0j1&sourceid=chrome&ie=UTF-8
 // // https://www.google.com/search?q=event+target&rlz=1C1VDKB_en-GBGB988GB988&oq=event+target&aqs=chrome.0.0i512l3j0i20i263i512j0i512l3j69i60.1902j0j1&sourceid=chrome&ie=UTF-8
