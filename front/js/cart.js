@@ -1,4 +1,4 @@
-let products;
+let productCache;
 
 fetch("http://localhost:3000/api/products")
   .then((data) => {
@@ -6,9 +6,7 @@ fetch("http://localhost:3000/api/products")
   })
   .then((products) => {
     console.log(products);
-    // let products = products;
-    let initialProducts = products;
-    console.log(initialProducts);
+    productCache = products;
     showProductsInCard(products);
   });
 
@@ -150,7 +148,7 @@ function removeCartItem(event) {
   // updateCartPageTotals();
 
   updateCartTotalQuantity(cartArrayUpdated);
-  updateCartTotalPrice(cartArrayUpdated, products);
+  updateCartTotalPrice(cartArrayUpdated, productCache);
   //TODO use cartArray and for loop/ or reduce()/ to calculate the new totals quantity and price and insert it into the page
   //NOTE you can use info from cartArrayUpdated and global products array which you originaly fetched from the backend on top
 }
@@ -168,21 +166,24 @@ function updateCartTotalQuantity(cartArrayUpdated) {
 function updateCartTotalPrice(cartArrayUpdated, products) {
   let totalItemsPrice = 0;
   //matching the chosed local storage item with the same from the server so i can get the price of the product
-  for (const localProduct of cartArrayUpdated) {
-    const matchedProduct = products.find((product) => {
+  for (const cartItem of cartArrayUpdated) {
+    const matchedProduct = productCache.find((product) => {
       console.log(product._id);
-      return product._id === localProduct.id;
+      return product._id === cartItem.id;
     });
-    let deletedItemPrice = localProduct.quantity * matchedProduct.price;
-    totalItemsPrice = totalItemsPrice - deletedItemPrice;
+
+    let cartItemTotalPrice = cartItem.quantity * matchedProduct.price;
+    totalItemsPrice += cartItemTotalPrice;
   }
+
+  const implementingTotalPrice = document.querySelector("#totalPrice");
+  implementingTotalPrice.innerText = totalItemsPrice;
 }
 
 function updateCartItemQuantity(event) {
   const cartArray = JSON.parse(localStorage.getItem("cart"));
   const quantityInputField = event.target; //targetting the deleteButton
   const clickedArticle = quantityInputField.closest("article"); // selectiong the closest article parent
-  //TODO remove the selected object from the local storage
   const id = clickedArticle.dataset.id;
   const color = clickedArticle.dataset.color;
   console.log(id);
@@ -198,6 +199,8 @@ function updateCartItemQuantity(event) {
   //TODO use cartArray and for loop/ or reduce()/ to calculate the new totals quantity and price and insert it into the page
   matchedCartItem.quantity = parseInt(quantityInputField.value);
   localStorage.setItem("cart", JSON.stringify(cartArray));
+  updateCartTotalQuantity(cartArray);
+  updateCartTotalPrice(cartArray, productCache);
 }
 
 // // https://www.google.com/search?q=change+eventlistenere+js&rlz=1C1VDKB_en-GBGB988GB988&oq=change+eventlistenere+js&aqs=chrome..69i57j0i13i512l4j0i13i30l2j0i13i15i30j0i5i13i30l2.5365j0j1&sourceid=chrome&ie=UTF-8
