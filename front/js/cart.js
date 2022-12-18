@@ -117,13 +117,11 @@ function showProductsInCard(products) {
 //Milestone 9
 
 //remove an item from the cart
-
 function removeCartItem(event) {
   const cartArray = JSON.parse(localStorage.getItem("cart")) || [];
   const deleteButtonClicked = event.target; //targetting the deleteButton
   const clickedArticle = deleteButtonClicked.closest("article"); // selectiong the closest article parent
   clickedArticle.remove(); //removing the closest article parent
-  //TODO remove the selected object from the local storage
   const id = clickedArticle.dataset.id;
   const color = clickedArticle.dataset.color;
   console.log(id);
@@ -136,21 +134,8 @@ function removeCartItem(event) {
   //Update local storage
   localStorage.setItem("cart", JSON.stringify(cartArrayUpdated));
 
-  // //Update cart page totals
-  // let totalItemsQuantity = 0;
-  // for (const localProduct of cartArrayUpdated) {
-  //   totalItemsQuantity = totalItemsQuantity + localProduct.quantity;
-  //   const totalQuantity = document.querySelector("#totalQuantity");
-  //   totalQuantity.textContent = totalItemsQuantity;
-
-  // }
-  //EXTRACTED UPDATE FUNCTION!!!!!!!!!!!!!!!!!!!!!!!
-  // updateCartPageTotals();
-
   updateCartTotalQuantity(cartArrayUpdated);
   updateCartTotalPrice(cartArrayUpdated, productCache);
-  //TODO use cartArray and for loop/ or reduce()/ to calculate the new totals quantity and price and insert it into the page
-  //NOTE you can use info from cartArrayUpdated and global products array which you originaly fetched from the backend on top
 }
 
 //total quantity calculated when removing an item from the cart
@@ -213,5 +198,93 @@ function updateCartItemQuantity(event) {
 
 //TODO add cllick eventListener to Order btn
 //TODO test each form field for valid information and add error msg to the not valid fields
-//TODO do http posr request to the backend for /order
+//TODO do http post request to the backend for /order
 //TODO if successful use wondow.location.assign(url string with the parameter having the order id)
+
+//validating first name input field
+//Miroslav - no special chars, no numbers, no spaces; only lower and upper case and a dash (-) between 2 names like Anna-Maria
+const firstNameInput = document.getElementById("firstName");
+let firstName = firstNameInput.value;
+firstNameInput.addEventListener("change", firstNameValidation(firstName));
+function firstNameValidation(firstName) {
+  const firstNameRules = new RegExp(/^[A-Z]{1}[a-z]{1,}?-[A-Z]{1}[a-z]{1,}/);
+  let isValid = firstNameRules.test(firstName);
+  if (isValid) {
+    console.log("The first name is valid");
+  } else {
+    let firstNameError = document.getElementById("firstNameErrorMsg");
+    firstNameError.innerText = "Incorrect first name format";
+  }
+}
+
+//validating surname input field
+//same like above
+const lastNameInput = document.getElementById("lastName");
+let lastName = lastNameInput.value;
+lastNameInput.addEventListener("change", lastNameValidation(lastName));
+function lastNameValidation(lastName) {
+  const lastNameRules = new RegExp(/^[A-Z]{1}[a-z]{1,}?-[A-Z]{1}[a-z]{1,}/);
+  let isValid = lastNameRules.test(lastName);
+  if (isValid) {
+    console.log("The last name is valid");
+  } else {
+    let lastNameError = document.getElementById("lastNameErrorMsg");
+    lastNameError.innerText = "Incorrect last name format";
+  }
+}
+//validating address input field
+// 11 Bank street, apt. 8 (or blank / or a dash), City, state abbreviation, zip code
+const addressInput = document.getElementById("address");
+let address = addressInput.value;
+addressInput.addEventListener("change", addressValidation(address));
+function lastNameValidation(address) {
+  const addressRules = new RegExp(
+    /[0-9]{1,5}( [a-zA-Z.]*){1,4},?( [a-zA-Z]*){1,3},? [a-zA-Z]{2},? [0-9]{5}/
+  );
+  let isValid = addressRules.test(address);
+  if (isValid) {
+    console.log("The address is valid");
+  } else {
+    let addressError = document.getElementById("addressErrorMsg");
+    addressError.innerText =
+      "Please use correct address format: eg. 11 Bank street, Las Vegas, NV, 89110";
+  }
+}
+//validating city input field
+// like the first two input fields
+const cityInput = document.getElementById("city");
+let city = cityInput.value;
+cityInput.addEventListener("change", cityValidation(city));
+function lastNameValidation(city) {
+  const cityRules = new RegExp(/[a-zA-Z]*){1,3}/);
+  let isValid = cityRules.test(city);
+  if (isValid) {
+    console.log("The city is valid");
+  } else {
+    let cityError = document.getElementById("cityErrorMsg");
+    cityError.innerText = "Incorrect city name format";
+  }
+}
+
+//validating email input field
+const emailInput = document.getElementById("email");
+let email = emailInput.value;
+emailInput.addEventListener("change", emailValidation(email));
+function emailValidation(email) {
+  const emailRules = new RegExp(
+    /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+  );
+  let isValid = emailRules.test(email);
+  if (isValid) {
+    console.log("The email is valid");
+  } else {
+    let emailError = document.getElementById("emailErrorMsg");
+    emailError.innerText = "Incorrect email address format";
+  }
+}
+
+const orderButton = document.getElementById("order");
+
+orderButton.addEventListener("click", placeOrder()); // the function is NOT created
+
+function placeOrder() {}
