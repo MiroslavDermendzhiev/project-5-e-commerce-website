@@ -196,126 +196,192 @@ function updateCartItemQuantity(event) {
 
 //Milestone 10
 
-//TODO add cllick eventListener to Order btn
-//TODO test each form field for valid information and add error msg to the not valid fields
-//TODO do http post request to the backend for /order
-//TODO if successful use wondow.location.assign(url string with the parameter having the order id)
-
 //validating first name input field
-//Miroslav - no special chars, no numbers, no spaces; only lower and upper case and a dash (-) between 2 names like Anna-Maria
 
 const orderButton = document.getElementById("order");
+const firstNameInput = document.getElementById("firstName");
+let firstNameError = document.getElementById("firstNameErrorMsg");
+const lastNameInput = document.getElementById("lastName");
+let lastNameError = document.getElementById("lastNameErrorMsg");
+const addressInput = document.getElementById("address");
+let addressError = document.getElementById("addressErrorMsg");
+const cityInput = document.getElementById("city");
+let cityError = document.getElementById("cityErrorMsg");
+const emailInput = document.getElementById("email");
+let emailError = document.getElementById("emailErrorMsg");
 
-orderButton.addEventListener("click", placeOrder()); // the function is NOT created
+orderButton.addEventListener("click", placeOrder);
 
-function placeOrder() {
-  const firstNameInput = document.getElementById("firstName");
-  let firstName = firstNameInput.value;
-  firstNameInput.addEventListener("change", firstNameValidation(firstName));
-  function firstNameValidation(firstName) {
-    const firstNameRules = new RegExp(/^[A-Z]{1}[a-z]{1,}?-[A-Z]{1}[a-z]{1,}/);
-    let isValid = firstNameRules.test(firstName);
-    if (isValid) {
-      console.log("The first name is valid");
-    } else {
-      let firstNameError = document.getElementById("firstNameErrorMsg");
-      firstNameError.innerText = "Incorrect first name format";
-    }
+firstNameInput.addEventListener("change", firstNameValidation);
+lastNameInput.addEventListener("change", lastNameValidation);
+addressInput.addEventListener("change", addressValidation);
+cityInput.addEventListener("change", cityValidation);
+emailInput.addEventListener("change", emailValidation);
+
+function placeOrder(event) {
+  event.preventDefault();
+
+  if (testAllFields()) {
+    const order = {
+      contact: {
+        firstName: firstNameInput.value,
+        lastName: lastNameInput.value,
+        address: addressInput.value,
+        city: cityInput.value,
+        email: emailInput.value,
+      },
+      products: [],
+    };
+
+    const cartArray = JSON.parse(localStorage.getItem("cart")) || [];
+    const productIds = cartArray.map((cartItem) => cartItem.id);
+    order.products = productIds;
+
+    const newOrder = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(order),
+    };
+
+    fetch(`http://localhost:3000/api/products/order`, newOrder)
+      .then((data) => {
+        if (!data.ok) {
+          throw Error(data.status);
+        }
+        return data.json();
+      })
+      .then((newOrder) => {
+        localStorage.removeItem("cart");
+        const url = `./confirmation.html?orderId=${newOrder.orderId}`;
+        location.assign(url);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }
+}
+
+function testAllFields() {
+  let result = true;
+  result = result && testFirstName(firstNameInput.value);
+  console.log(result);
+
+  result = testLastName(lastNameInput.value) && result;
+  console.log(result);
+
+  result = testAddress(addressInput.value) && result;
+  console.log(result);
+
+  result = testCity(cityInput.value) && result;
+  console.log(result);
+
+  result = testEmail(emailInput.value) && result;
+  console.log(result);
+  return result;
+}
+
+//validating firstName field
+function firstNameValidation(event) {
+  const firstName = event.target.value;
+  testFirstName(firstName);
+}
+
+function testFirstName(firstName) {
+  let result = false;
+  const firstNameRules = new RegExp(/^[A-Za-z]+$/);
+  let isValid = firstNameRules.test(firstName);
+  console.log(isValid);
+  if (isValid) {
+    firstNameError.innerText = "";
+    result = true;
+  } else {
+    firstNameError.innerText = "Incorrect first name format";
   }
 
-  //validating surname input field
-  //same like above
-  const lastNameInput = document.getElementById("lastName");
-  let lastName = lastNameInput.value;
-  lastNameInput.addEventListener("change", lastNameValidation(lastName));
-  function lastNameValidation(lastName) {
-    const lastNameRules = new RegExp(/^[A-Z]{1}[a-z]{1,}?-[A-Z]{1}[a-z]{1,}/);
-    let isValid = lastNameRules.test(lastName);
-    if (isValid) {
-      console.log("The last name is valid");
-    } else {
-      let lastNameError = document.getElementById("lastNameErrorMsg");
-      lastNameError.innerText = "Incorrect last name format";
-    }
-  }
-  //validating address input field
-  // 11 Bank street, apt. 8 (or blank / or a dash), City, state abbreviation, zip code
-  const addressInput = document.getElementById("address");
-  let address = addressInput.value;
-  addressInput.addEventListener("change", addressValidation(address));
-  function addressValidation(address) {
-    const addressRules = new RegExp(
-      /[0-9]{1,5}( [a-zA-Z.]*){1,4},?( [a-zA-Z]*){1,3},? [a-zA-Z]{2},? [0-9]{5}/
-    );
-    let isValid = addressRules.test(address);
-    if (isValid) {
-      console.log("The address is valid");
-    } else {
-      let addressError = document.getElementById("addressErrorMsg");
-      addressError.innerText =
-        "Please use correct address format: eg. 11 Bank street, Las Vegas, NV, 89110";
-    }
-  }
-  //validating city input field
-  // like the first two input fields
-  const cityInput = document.getElementById("city");
-  let city = cityInput.value;
-  cityInput.addEventListener("change", cityValidation(city));
-  function cityValidation(city) {
-    const cityRules = new RegExp(/([a-zA-Z]*){1,3}/);
-    let isValid = cityRules.test(city);
-    if (isValid) {
-      console.log("The city is valid");
-    } else {
-      let cityError = document.getElementById("cityErrorMsg");
-      cityError.innerText = "Incorrect city name format";
-    }
-  }
+  return result;
+}
 
-  //validating email input field
-  const emailInput = document.getElementById("email");
-  let email = emailInput.value;
-  emailInput.addEventListener("change", emailValidation(email));
-  function emailValidation(email) {
-    const emailRules = new RegExp(
-      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
-    );
-    let isValid = emailRules.test(email);
-    if (isValid) {
-      console.log("The email is valid");
-    } else {
-      let emailError = document.getElementById("emailErrorMsg");
-      emailError.innerText = "Incorrect email address format";
-    }
+//validating last name input field
+
+function lastNameValidation(event) {
+  const lastName = event.target.value;
+  testLastName(lastName);
+}
+function testLastName(lastName) {
+  console.log(lastName);
+  let result = false;
+  const lastNameRules = new RegExp(/^[A-Za-z]+$/);
+  let isValid = lastNameRules.test(lastName);
+  if (isValid) {
+    lastNameError.innerText = "";
+    result = true;
+  } else {
+    lastNameError.innerText = "Incorrect last name format";
   }
+  return result;
+}
 
-  const userInformation = {
-    firstName: firstNameInput.value,
-    lastName: lastNameInput.value,
-    address: addressInput.value,
-    city: cityInput.value,
-    email: emailInput.value,
-  };
+//validating address input field
+// 11 Bank street, apt. 8 (or blank / or a dash), City, state abbreviation, zip code
+function addressValidation(event) {
+  const address = event.target.value;
+  testAddress(address);
+}
 
-  const newOrder = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(userInformation),
-  };
+function testAddress(address) {
+  let result = false;
+  const addressRules = new RegExp(
+    /[0-9]{1,5}( [a-zA-Z.]*){1,4},?( [a-zA-Z]*){1,3},? [a-zA-Z]{2},? [0-9]{5}/
+  );
+  let isValid = addressRules.test(address);
+  if (isValid) {
+    addressError.innerText = "";
+    result = true;
+  } else {
+    addressError.innerText =
+      "Please use correct address format: eg. 11 Bank street, Las Vegas, NV, 89110";
+  }
+  return result;
+}
+//validating city input field
 
-  fetch(`http://localhost:3000/api/products/order`, newOrder)
-    .then((data) => {
-      if (!data.ok) {
-        throw Error(data.status);
-      }
-      return data.json();
-    })
-    .then((newOrder) => {
-      console.log(newOrder);
-    })
-    .catch((e) => {
-      console.log(e);
-    });
+function cityValidation(event) {
+  const city = event.targe.value;
+  testCity(city);
+}
+
+function testCity(city) {
+  let result = false;
+  const cityRules = new RegExp(/[A-Za-z]+$/);
+  const isValid = cityRules.test(city);
+  if (isValid) {
+    cityError.innerText = "";
+    result = true;
+  } else {
+    cityError.innerText = "Incorrect city name format";
+  }
+  return result;
+}
+//validating email input field
+
+function emailValidation(event) {
+  const email = event.target.value;
+  testEmail(email);
+}
+
+function testEmail(email) {
+  let result = false;
+  const emailRules = new RegExp(
+    /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+  );
+  const isValid = emailRules.test(email);
+  if (isValid) {
+    emailError.innerText = "";
+    result = true;
+  } else {
+    emailError.innerText = "Incorrect email address format";
+  }
+  return result;
 }
